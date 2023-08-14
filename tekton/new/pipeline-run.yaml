@@ -1,86 +1,36 @@
-apiVersion: tekton.dev/v1beta1
+apiVersion: tekton.dev/v1
 kind: PipelineRun
 metadata:
-  name: pipeline-dev-quarkus-pykkto
+  annotations:
+    chains.tekton.dev/signed: "true"
+    pipeline.openshift.io/started-by: seravat
   labels:
     tekton.dev/pipeline: pipeline-dev-quarkus
+  name: pipeline-dev-quarkus-j0jh24
+  namespace: info-mediator
 spec:
   params:
-    - name: app_name
-      value: gro-api
-    - name: git-url
-      value: 'git@github.com:spanishirsh/ogcio-poc.git'
-    - name: git-revision
-      value: main
-    - name: context_dir
-      value: gro-api
+  - name: app_name
+    value: gro-api
+  - name: git-url
+    value: git@github.com:spanishirsh/ogcio-poc.git
+  - name: git-revision
+    value: main
+  - name: context_dir
+    value: gro-api
   pipelineRef:
     name: pipeline-dev-quarkus
-  serviceAccountName: pipeline
-  timeout: 1h0m0s
+  taskRunTemplate:
+    serviceAccountName: pipeline
+  timeouts:
+    pipeline: 1h0m0s
   workspaces:
-    - name: pipeline-m2-cache
-      persistentVolumeClaim:
-        claimName: pipeline-m2-cache
-    - name: pipeline-jbang-cache
-      persistentVolumeClaim:
-        claimName: pipeline-jbang-cache
-    - name: output
-      persistentVolumeClaim:
-        claimName: pipeline-workspace-pvc
-  pipelineSpec:
-    params:
-      - description: ProjectId
-        name: app_name
-        type: string
-      - name: git-url
-        type: string
-      - name: git-revision
-        type: string
-      - default: ''
-        description: context_dir
-        name: context_dir
-        type: string
-    tasks:
-      - name: fetch-repository
-        params:
-          - name: app_name
-            value: gro-api
-          - name: url
-            value: 'git@github.com:spanishirsh/ogcio-poc.git'
-          - name: subdirectory
-            value: ''
-          - name: deleteExisting
-            value: 'true'
-          - name: revision
-            value: main
-        taskRef:
-          kind: ClusterTask
-          name: git-clone
-        workspaces:
-          - name: output
-            workspace: output
-      - name: task-dev-quarkus
-        params:
-          - name: app_name
-            value: gro-api
-          - name: context_dir
-            value: gro-api
-        runAfter:
-          - fetch-repository
-        taskRef:
-          kind: Task
-          name: task-dev-quarkus
-        workspaces:
-          - name: pipeline-m2-cache
-            workspace: pipeline-m2-cache
-          - name: pipeline-jbang-cache
-            workspace: pipeline-jbang-cache
-          - name: output
-            workspace: output
-    workspaces:
-      - description: Maven Cache
-        name: pipeline-m2-cache
-      - description: JBang Cache
-        name: pipeline-jbang-cache
-      - name: output
+  - name: pipeline-m2-cache
+    persistentVolumeClaim:
+      claimName: pipeline-m2-cache
+  - name: pipeline-jbang-cache
+    persistentVolumeClaim:
+      claimName: pipeline-jbang-cache
+  - name: output
+    persistentVolumeClaim:
+      claimName: pipeline-workspace-pvc

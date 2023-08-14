@@ -1,0 +1,13 @@
+apiVersion: keycloak.org/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: info-mediator
+spec:
+  instanceSelector:
+    matchLabels:
+      app: sso
+  realm:
+    displayName: Information Mediator Realm
+    enabled: true
+    id: info-mediator
+    realm: info-mediator

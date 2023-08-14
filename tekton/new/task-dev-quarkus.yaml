@@ -59,9 +59,6 @@ spec:
 
   workspaces:
     - description: Maven Cache
-      mountPath: /root/.m2
+      mountPath: /home/jboss/.m2
       name: pipeline-m2-cache
-    - description: JBang Cache
-      mountPath: /jbang/.jbang/cache
-      name: pipeline-jbang-cache
     - name: output

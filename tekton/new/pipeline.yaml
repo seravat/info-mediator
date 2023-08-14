@@ -51,8 +51,6 @@ spec:
     workspaces:
     - name: pipeline-m2-cache
       workspace: pipeline-m2-cache
-    - name: pipeline-jbang-cache
-      workspace: pipeline-jbang-cache
     - name: output
       workspace: output
     runAfter:
@@ -61,6 +59,4 @@ spec:
   workspaces:
   - description: Maven Cache
     name: pipeline-m2-cache
-  - description: JBang Cache
-    name: pipeline-jbang-cache
   - name: output

@@ -52,7 +52,7 @@ spec:
           -Dquarkus.openshift.labels.\"app.openshift.io/runtime\"=camel \
           -Dquarkus.container-image.group=${NAMESPACE} \
           -Dquarkus.container-image.tag=${DATE} \
-          -Dquarkus.openshift.route.target-port=https \
+          -Dquarkus.openshift.route.target-port=http \
           -Dquarkus.openshift.route.tls.termination=edge \
           -Dquarkus.openshift.route.tls.insecure-edge-termination-policy=None \
           -DskipTests

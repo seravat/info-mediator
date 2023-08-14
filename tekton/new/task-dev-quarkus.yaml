@@ -1,0 +1,53 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: task-dev-quarkus
+spec:
+  params:
+  - description: app_name
+    name: app_name
+    type: string
+  - default: ''
+    description: context_dir
+    name: context_dir
+    type: string
+  steps:
+  - env:
+    - name: IMAGE_REGISTRY
+      value: 'image-registry.openshift-image-registry.svc:5000'
+    image: >-
+      default-route-openshift-image-registry.apps.infomed.foma.p1.openshiftapps.com/openshift/ubi8-openjdk-17:1.12
+    name: karavan-build-deploy
+    resources: {}
+    script: >-
+      #!/usr/bin/env bash #magic___^_^___line #magic___^_^___line cd /workspace/output/$(params.context_dir) #magic___^_^___line #magic___^_^___line pwd #magic___^_^___line #magic___^_^___line ls -ls #magic___^_^___line export DATE=$(date '+%Y%m%d%H%M%S') #magic___^_^___line export TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token) #magic___^_^___line export NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace) #magic___^_^___line #magic___^_^___line mvn package \
+        -Dquarkus.container-image.build=true \
+        -Dquarkus.container-image.push=true \
+        -Dquarkus.container-image.insecure=true \
+        -Dquarkus.container-image.username=sa \
+        -Dquarkus.container-image.password=${TOKEN} \
+        -Dquarkus.container-image.registry=${IMAGE_REGISTRY} \
+        -Dquarkus.container-image.builder=jib \
+        -Dquarkus.kubernetes-client.master-url=kubernetes.default.svc \
+        -Dquarkus.kubernetes-client.token=${TOKEN} \
+        -Dquarkus.kubernetes.deploy=true \
+        -Dquarkus.openshift.deployment-kind=Deployment \
+        -Dquarkus.openshift.route.expose=true \
+        -Dquarkus.openshift.add-version-to-label-selectors=false \
+        -Dquarkus.openshift.labels.\"app\"=$(inputs.params.app_name) \
+        -Dquarkus.openshift.labels.\"app.openshift.io/runtime\"=camel \
+        -Dquarkus.container-image.group=${NAMESPACE} \
+        -Dquarkus.container-image.tag=${DATE} \
+        -Dquarkus.openshift.route.target-port=https \
+        -Dquarkus.openshift.route.tls.termination=edge \
+        -Dquarkus.openshift.route.tls.insecure-edge-termination-policy=None \
+        -DskipTests
+
+  workspaces:
+  - description: Maven Cache
+    mountPath: /root/.m2
+    name: pipeline-m2-cache
+  - description: JBang Cache
+    mountPath: /jbang/.jbang/cache
+    name: pipeline-jbang-cache
+  - name: output

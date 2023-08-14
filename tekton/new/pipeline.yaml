@@ -1,0 +1,66 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  labels:
+  name: pipeline-dev-quarkus
+spec:
+  params:
+  - description: ProjectId
+    name: app_name
+    type: string
+  - name: git-url
+    type: string
+  - name: git-revision
+    type: string
+  - description: context_dir
+    name: context_dir
+    type: string
+    default: ''
+  tasks:
+
+  # Git Checkout
+  - name: fetch-repository
+    taskRef:
+      name: git-clone
+      kind: ClusterTask
+    workspaces:
+    - name: output
+      workspace: output
+    params:
+    - name: app_name
+      value: $(params.app_name)   
+    - name: url
+      value: $(params.git-url)
+    - name: subdirectory
+      value: ""
+    - name: deleteExisting
+      value: "true"
+    - name: revision
+      value: $(params.git-revision)
+
+  # Build/Deploy Quarkus app
+  - name: task-dev-quarkus
+    params:
+    - name: app_name
+      value: $(params.app_name)
+    - name: context_dir
+      value: $(params.context_dir)
+    taskRef:
+      kind: Task
+      name: task-dev-quarkus
+    workspaces:
+    - name: pipeline-m2-cache
+      workspace: pipeline-m2-cache
+    - name: pipeline-jbang-cache
+      workspace: pipeline-jbang-cache
+    - name: output
+      workspace: output
+    runAfter:
+    - fetch-repository
+
+  workspaces:
+  - description: Maven Cache
+    name: pipeline-m2-cache
+  - description: JBang Cache
+    name: pipeline-jbang-cache
+  - name: output

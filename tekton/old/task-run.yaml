@@ -1,0 +1,38 @@
+apiVersion: tekton.dev/v1
+kind: TaskRun
+metadata:
+  annotations:
+    chains.tekton.dev/signed: "true"
+    pipeline.openshift.io/started-by: seravat
+    pipeline.tekton.dev/release: b8ad1b2
+  labels:
+    app: karavan-pipeline-dev-quarkus
+    app.kubernetes.io/managed-by: tekton-pipelines
+    app.kubernetes.io/name: karavan-pipeline-dev-quarkus
+    app.kubernetes.io/part-of: karavan
+    app.kubernetes.io/version: 3.20.1
+    app.openshift.io/runtime: camel
+    karavan-project-id: simple-log
+    tekton.dev/memberOf: tasks
+    tekton.dev/pipeline: karavan-pipeline-dev-quarkus
+    tekton.dev/pipelineRun: karavan-pipeline-dev-quarkus-e5raz2
+    tekton.dev/pipelineTask: karavan-task-dev-quarkus
+    tekton.dev/task: karavan-task-dev-quarkus
+  name: karavan-pipeline-dev-quarkus-e5raz2-karavan-task-dev-quarkus
+  namespace: joao-test
+spec:
+  params:
+  - name: project
+    value: simple-log
+  serviceAccountName: pipeline
+  taskRef:
+    kind: Task
+    name: karavan-task-dev-quarkus
+  timeout: 1h0m0s
+  workspaces:
+  - name: karavan-m2-cache
+    persistentVolumeClaim:
+      claimName: karavan-m2-cache
+  - name: karavan-jbang-cache
+    persistentVolumeClaim:
+      claimName: karavan-jbang-cache

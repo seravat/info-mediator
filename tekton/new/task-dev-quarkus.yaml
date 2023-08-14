@@ -30,10 +30,9 @@ spec:
 
         ls -la
 
-        export DATE=$(date '+%Y%m%d%H%M%S')    export TOKEN=$(cat
-        /var/run/secrets/kubernetes.io/serviceaccount/token)    export
-        NAMESPACE=$(cat
-        /var/run/secrets/kubernetes.io/serviceaccount/namespace)   
+        export DATE=$(date '+%Y%m%d%H%M%S')    
+        export TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)    
+        export NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)   
 
         mvn package \
           -Dquarkus.container-image.build=true \
@@ -57,6 +56,7 @@ spec:
           -Dquarkus.openshift.route.tls.termination=edge \
           -Dquarkus.openshift.route.tls.insecure-edge-termination-policy=None \
           -DskipTests
+
   workspaces:
     - description: Maven Cache
       mountPath: /root/.m2
